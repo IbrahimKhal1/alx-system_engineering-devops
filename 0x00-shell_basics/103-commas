@@ -1,0 +1,47 @@
+#!/bin/bash
+# List all files and directories, including hidden ones
+# Sort them according to the given criteria and format the output
+
+# Using ls with -a to include hidden files
+# Sorting with custom sort function
+# Formatting the output with commas and ending with a newline
+
+ls -a --format=single-column | 
+awk '
+BEGIN {
+    # Create an array to hold all entries except for . and ..
+    count = 0;
+}
+{
+    if ($0 == "." || $0 == "..") {
+        # Print . and .. immediately
+        if (NR > 1) {
+            printf ", ";
+        }
+        printf $0;
+    } else {
+        # Add other entries to the array
+        entries[count] = $0;
+        count++;
+    }
+}
+END {
+    # Sort entries: numbers before letters, case insensitive
+    n = asort(entries, sorted, "IGNORECASE=1");
+
+    # Print the entries in the required format
+    for (i = 1; i <= n; i++) {
+        if (i == 1 && ("., .." ~ entries[i])) {
+            printf ", ";
+        }
+        if (system("[ -d \"" sorted[i] "\" ]") == 0) {
+            printf "%s/", sorted[i];
+        } else {
+            printf "%s", sorted[i];
+        }
+        if (i < n) {
+            printf ", ";
+        }
+    }
+    printf "\n";
+}'
