@@ -1,0 +1,2 @@
+#!/bn/bash
+head /etc/passwd
