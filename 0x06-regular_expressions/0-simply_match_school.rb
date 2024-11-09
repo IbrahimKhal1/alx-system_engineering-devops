@@ -1,3 +1,4 @@
 #!/usr/bin/env ruby
-#regular expression must match School
+#This project is done by Cyberweb
+
 puts ARGV[0].scan(/School/).join
