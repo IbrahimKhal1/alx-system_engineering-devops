@@ -1,7 +1,17 @@
-#!/usr/bin/env bash
-# Installs nginx server
-apt-get update
-apt-get -y install nginx
-ufw allow 'Nginx HTTP'
+#!/bin/bash
+
+# Update package list
+apt-get update -y
+
+# Install Nginx
+apt-get install -y nginx
+
+# Create a custom HTML page
 echo "Hello World!" > /var/www/html/index.html
-service nginx start
+
+# Ensure Nginx listens on port 80 (default configuration does this)
+# Restart Nginx using service command (not systemctl)
+service nginx restart
+
+# Ensure proper permissions for the HTML file
+chmod 644 /var/www/html/index.html
