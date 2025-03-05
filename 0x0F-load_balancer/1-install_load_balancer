@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#Installs and configures HAproxy
+
+
+function install() {
+	command -v "$1" &> /dev/null
+	if [ $? -ne 0 ]; then
+		sudo apt-get update -y -qq && \
+			sudo apt-get install -y "$1" -qq
+	fi
+}
+
+install haproxy
+
+sudo cp /etc/haproxy/haproxy.cfg haproxy_default.backup
+
+server_config=\
+"
+defaults
+  mode http
+  timeout client 15s
+  timeout connect 10s
+  timeout server 15s
+  timeout http-request 10s
+frontend clickviral-tech-frontend
+    bind *:80
+    default_backend clickviral-tech-backend
+
+backend clickviral-tech-backend
+    balance roundrobin
+    server 648220-web-01 34.201.164.251:80 check
+    server 648220-web-02 100.26.18.214:80 check
+"
+
+echo "$server_config" | sudo dd status=none of=/etc/haproxy/haproxy.cfg
+echo "ENABLED=1" | sudo dd status=none of=/etc/default/haproxy
+echo "configured - Roundrobin On web-01 & web-02"
+
+if [ "$(pgrep -c haproxy)" -le 0 ]; then
+	sudo service haproxy start
+else
+	sudo service haproxy restart
+fi
