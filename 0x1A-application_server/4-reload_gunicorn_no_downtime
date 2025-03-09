@@ -1,3 +1,10 @@
 #!/usr/bin/env bash
 # Script that reloads Gunicorn.
-pgrep gunicorn | xargs kill -HUP
+
+if pgrep gunicorn > /dev/null; then
+    pgrep gunicorn | xargs kill -HUP
+    echo "OK"
+else
+    echo "Gunicorn not running"
+    exit 1
+fi
